@@ -1,9 +1,9 @@
 public abstract class User {
     private int id;
-    private String name;
-    private String location;
-    private double rating;
-    private NotificationService notificationService;
+    protected String name;
+    protected String location;
+    protected double rating;
+    protected NotificationService notificationService;
 
     public User(int id, String name, String location, double rating, NotificationService notificationService) {
         this.id = id;
