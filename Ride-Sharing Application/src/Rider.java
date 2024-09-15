@@ -8,10 +8,11 @@
         this.preferredPaymentMethod = preferredPaymentMethod;
     }
 
-    public void requestRide(String pickupLocation, String dropOffLocation, RideType rideType) {
-        Trip trip = new Trip(pickupLocation, dropOffLocation, rideType, this, notificationService);
-        trip.assignDriver();
-    }
+     public Trip requestRide(String pickupLocation, String dropOffLocation, RideType rideType) {
+         Trip trip = new Trip(pickupLocation, dropOffLocation, rideType, this);
+         trip.assignDriver();
+         return trip;
+     }
 
     public void rateDriver(Driver driver, double rating) {
         driver.updateRating(rating);

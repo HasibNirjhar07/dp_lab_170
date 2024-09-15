@@ -4,63 +4,67 @@ public class Trip {
     private String pickupLocation;
     private String dropOffLocation;
     private RideType rideType;
-    private String status;
+    private TripStatus status;
     private double fare;
     private double distance;
-    private Driver driver;
-    private Rider rider;
+    public Driver driver;
+    public Rider rider;
     private NotificationService notificationService;
 
-    public Trip(String pickupLocation, String dropOffLocation, RideType rideType, Rider rider, NotificationService notificationService) {
+    public Trip(String pickupLocation, String dropOffLocation, RideType rideType, Rider rider) {
         this.id = ++tripCounter;
         this.pickupLocation = pickupLocation;
         this.dropOffLocation = dropOffLocation;
         this.rideType = rideType;
-        this.status = "Requested";
+        this.status = TripStatus.REQUESTED;
         this.rider = rider;
-        this.notificationService = notificationService;
         this.fare = calculateFare();
-        notificationService.sendNotification(rider, "Ride requested successfully.");
+        this.distance = calculateDistance(); // Simplified, would use a mapping service in reality
+        rider.recieveNotification("Ride requested successfully.");
+    }
+    public double calculateFare() {
+        double baseFare = rideType.getBaseFare();
+        double distanceFare = distance * rideType.getPricePerKm();
+        double timeFactor = getTimeFactor();
+        return (baseFare + distanceFare) * timeFactor;
     }
 
-    public double calculateFare() {
-        // Simplified fare calculation logic based on ride type
-        switch (rideType) {
-            case CARPOOL:
-                return 50.0;
-            case LUXURY:
-                return 150.0;
-            case BIKE:
-                return 30.0;
-            default:
-                return 100.0;
-        }
+    private double calculateDistance() {
+        // Simplified distance calculation
+        return 10.0; // Assume 10 km for all trips
+    }
+
+    private double getTimeFactor() {
+        // Simplified time factor calculation
+        int currentHour = java.time.LocalTime.now().getHour();
+        return (currentHour >= 22 || currentHour < 6) ? 1.5 : 1.0; // Higher rates for night rides
     }
 
     public void assignDriver() {
-        Driver driver = DriverManager.findAvailableDriver(rideType);
+        Driver driver = DriverManager.findAvailableDriver(rideType, pickupLocation);
         if (driver != null) {
             this.driver = driver;
             driver.setAvailability(false);
             driver.acceptRide(this);
-            notificationService.sendNotification(rider, "Driver found: " + driver.name);
-            notificationService.sendNotification(driver, "Ride assigned to you.");
+            rider.recieveNotification("Driver found: " + driver.name);
+            driver.recieveNotification("Ride assigned to you.");
         } else {
-            notificationService.sendNotification(rider, "No drivers available.");
+            rider.recieveNotification("No drivers available.");
+            setStatus(TripStatus.CANCELLED);
         }
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TripStatus status) {
         this.status = status;
-        if ("Completed".equals(status)) {
+        if (status == TripStatus.COMPLETED) {
             completeTrip();
         }
     }
 
     public void completeTrip() {
-        notificationService.sendNotification(rider, "Trip completed.");
-        notificationService.sendNotification(driver, "Trip completed.");
-        rider.makePayment(fare); // Use the rider's preferred payment method
+        rider.recieveNotification("Trip completed.");
+        driver.recieveNotification("Trip completed.");
+        rider.makePayment(fare);
         driver.setAvailability(true);
     }
 }

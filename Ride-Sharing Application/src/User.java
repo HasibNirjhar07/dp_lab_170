@@ -14,4 +14,8 @@ public abstract class User {
     }
     public abstract void recieveNotification(String message);
 
+    public void updateRating(double newRating) {
+        this.rating = (this.rating + newRating) / 2;
+    }
+
 }

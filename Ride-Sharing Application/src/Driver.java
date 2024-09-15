@@ -15,25 +15,23 @@ public class Driver extends User {
     }
 
     public void acceptRide(Trip trip) {
-        trip.setStatus("Accepted");
-        recieveNotification("Trip accepted.");
+        trip.setStatus(TripStatus.ACCEPTED);
+        recieveNotification("You have accepted a new ride.");
     }
 
     public void updateLocation(String newLocation) {
+
         this.location = newLocation;
+
     }
 
     public void startTrip(Trip trip) {
-        trip.setStatus("In Progress");
+        trip.setStatus(TripStatus.IN_PROGRESS);
         recieveNotification("Trip started.");
     }
 
     public void rateRider(Rider rider, double rating) {
-        rider.rating = (rider.rating + rating) / 2; // Simplified average calculation
-    }
-
-    public void updateRating(double newRating) {
-        this.rating = (this.rating + newRating) / 2; // Simplified average calculation
+        rider.updateRating(rating);
     }
 
 
