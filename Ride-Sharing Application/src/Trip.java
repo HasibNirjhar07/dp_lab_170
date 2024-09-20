@@ -64,6 +64,8 @@ public class Trip {
     public void completeTrip() {
         rider.recieveNotification("Trip completed.");
         driver.recieveNotification("Trip completed.");
+        System.out.println("Your by default payment method is " + rider.getPrefferedPaymentMethod().getClass().getSimpleName());
+        rider.changePaymentMethod();
         rider.makePayment(fare);
         driver.setAvailability(true);
     }
