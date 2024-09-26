@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Trip {
     private static int tripCounter = 0;
     private int id;
@@ -11,10 +13,9 @@ public class Trip {
     public Rider rider;
     private NotificationService notificationService;
 
-    public Trip(String pickupLocation, String dropOffLocation, RideType rideType, Rider rider) {
+    public Trip(RideType rideType, Rider rider) {
         this.id = ++tripCounter;
-        this.pickupLocation = pickupLocation;
-        this.dropOffLocation = dropOffLocation;
+
         this.rideType = rideType;
         this.status = TripStatus.REQUESTED;
         this.rider = rider;
@@ -22,6 +23,7 @@ public class Trip {
         this.distance = calculateDistance(); // Simplified, would use a mapping service in reality
         rider.recieveNotification("Ride requested successfully.");
     }
+
     public double calculateFare() {
         double baseFare = rideType.getBaseFare();
         double distanceFare = distance * rideType.getPricePerKm();
@@ -64,16 +66,33 @@ public class Trip {
     public void completeTrip() {
         rider.recieveNotification("Trip completed.");
         driver.recieveNotification("Trip completed.");
-        System.out.println("Your by default payment method is " + rider.getPrefferedPaymentMethod().getClass().getSimpleName());
-        rider.changePaymentMethod();
+        System.out.println(
+                "Your by default payment method is " + rider.getPrefferedPaymentMethod().getClass().getSimpleName());
+        System.out.println("Do you want to change your payment method? (yes/no)");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.next();
+        if (choice.equals("yes")) {
+            rider.changePaymentMethod();
+        }
+
         rider.makePayment(fare);
+
         driver.setAvailability(true);
     }
+
+    public void getpickUpLocation() {
+        System.out.println("Pickup location: " + pickupLocation);
+    }
+
+    public void getDropOffLocation() {
+        System.out.println("Drop off location: " + dropOffLocation);
+    }
+
+    public void setpickUpLocation(String pickupLocation) {
+        this.pickupLocation = pickupLocation;
+    }
+
+    public void setDropOffLocation(String dropOffLocation) {
+        this.dropOffLocation = dropOffLocation;
+    }
 }
-
-
-
-
-
-
-
