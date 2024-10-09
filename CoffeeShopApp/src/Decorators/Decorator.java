@@ -4,6 +4,7 @@ import Interface.Beverage;
 
 public class Decorator implements Beverage {
     private Beverage beverage;
+
     public Decorator(Beverage beverage){
         this.beverage = beverage;
     }
